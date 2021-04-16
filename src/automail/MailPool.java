@@ -12,6 +12,8 @@ import exceptions.ItemTooHeavyException;
  * The data structure and algorithms used in the MailPool is your choice.
  * 
  */
+
+
 public class MailPool {
 
 	private class Item {
@@ -56,12 +58,11 @@ public class MailPool {
 		pool.add(item);
 		pool.sort(new ItemComparator());
 	}
-	
-	
-	
+
 	/**
      * load up any waiting robots with mailItems, if any.
      */
+
 	public void loadItemsToRobot() throws ItemTooHeavyException {
 		//List available robots
 		ListIterator<Robot> i = robots.listIterator();
