@@ -24,7 +24,7 @@ public class Calculator {
 
 	public static double calculateServiceFee(MailItem item) throws Exception {
 		if(serviceFees == null) {
-			serviceFees = new double[Building.FLOORS];
+			serviceFees = new double[Building.FLOORS + 1];
 			for(int i=0; i<Building.FLOORS; i++) {
 				serviceFees[i] = 0;
 			}
@@ -61,7 +61,6 @@ public class Calculator {
 		return (movementCost * item.getMovementCount()) +
 				(lookupCost * item.getLookupCount());
 	}
-
 
 	public static double getChargeThreshold() {
 		return chargeThreshold;

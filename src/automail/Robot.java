@@ -154,7 +154,6 @@ public class Robot {
         }
         //only record movement if the robot has an item
         if(this.current_state == RobotState.DELIVERING) { 
-        	System.out.println("Robot hi");
         	recordMovement(1);
         }
     }
