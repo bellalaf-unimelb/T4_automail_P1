@@ -53,7 +53,7 @@ public class MailPool {
 	}
 
 	// Adds item to the regular pool
-
+	//called by addItemToPools
 	public void addToRegPool(MailItem mailItem) {
 		Item item = new Item(mailItem);
 		regPool.add(item);
@@ -62,6 +62,7 @@ public class MailPool {
 
 	// Adds item to the priority pool
 	// If it's high priority, it just gets added to the HP queue - no distinction between classes
+	//called by addItemToPools
 	public void addToPriorityPool(MailItem mailItem) {
 		Item item = new Item(mailItem);
 		priorityPool.add(item);

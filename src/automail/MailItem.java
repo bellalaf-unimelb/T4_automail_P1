@@ -45,11 +45,11 @@ public class MailItem {
     }
 
     public void recordMovement(int movementCount) {
-	this.movementCount += movementCount;
+    	this.movementCount += movementCount;
     }
 
     public void recordLookup() {
-	++lookupCount;
+    	++lookupCount;
     }
 
     public void resetActivity() {

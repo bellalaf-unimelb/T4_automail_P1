@@ -66,15 +66,16 @@ public class Robot {
 		case RETURNING:
 			/** If its current position is at the mail room, then the robot should change state */
                 if(current_floor == Building.MAILROOM_LOCATION){
-			if (tube != null) { // TODO: figure out if and how this can ever be true
-				tube.resetActivity();
-				mailPool.addItemToPools(tube);
+                	if (tube != null) { // TODO: figure out if and how this can ever be true
+                		//so far testing has indicated this never happens
+                		tube.resetActivity();
+                		mailPool.addItemToPools(tube);
                         System.out.printf("T: %3d > old addToPool [%s]%n", Clock.Time(), tube.toString());
                         tube = null;
-			}
+                	}	
 				/** Tell the sorter the robot is ready */
 				mailPool.registerWaiting(this);
-			changeState(RobotState.WAITING);
+				changeState(RobotState.WAITING);
                 } else {
 			/** If the robot is not at the mail room floor yet, then move towards it! */
                     moveTowards(Building.MAILROOM_LOCATION);
