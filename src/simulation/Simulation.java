@@ -126,7 +126,7 @@ public class Simulation {
 		MAIL_TO_CREATE = Integer.parseInt(automailProperties.getProperty("Mail_to_Create"));
         System.out.println("#Created mails: " + MAIL_TO_CREATE);
         // Mail_to_Create
-	MAIL_MAX_WEIGHT = Integer.parseInt(automailProperties.getProperty("Mail_Max_Weight"));
+        MAIL_MAX_WEIGHT = Integer.parseInt(automailProperties.getProperty("Mail_Max_Weight"));
         System.out.println("#Maximum weight: " + MAIL_MAX_WEIGHT);
 		// Last_Delivery_Time
 		Clock.MAIL_RECEVING_LENGTH = Integer.parseInt(automailProperties.getProperty("Mail_Receving_Length"));
@@ -190,5 +190,7 @@ public class Simulation {
         System.out.println("T: "+Clock.Time()+" | Simulation complete!");
         System.out.println("Final Delivery time: "+Clock.Time());
         System.out.printf("Delay: %.2f%n", total_delay);
+        //call statistics in Accountant
+        Accountant.reportStatistics();
     }
 }

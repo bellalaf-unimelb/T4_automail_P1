@@ -43,11 +43,11 @@ public class Accountant {
 			return;
 		}
 
-		System.out.format("Delivered %d items", deliveredItemCount);
+		System.out.format("Delivered %d items\n", deliveredItemCount);
 
-		System.out.format("Billed %lf dollars for activity\n", billableActivitySum);
-		System.out.format("Spent %lf dollars on activity\n", activityCostSum);
-		System.out.format("Spent %lf dollars on service\n", serviceCostSum);
+		System.out.format("Billed %.2f dollars for activity\n", billableActivitySum);
+		System.out.format("Spent %.2f dollars on activity\n", activityCostSum);
+		System.out.format("Spent %.2f dollars on service\n", serviceCostSum);
 
 		int totalLookupCount = lookupSuccessCount + lookupFailureCount;
 
@@ -55,7 +55,7 @@ public class Accountant {
 		double lookupFailurePercentage = 1 - lookupSuccessPercentage;
 
 		System.out.format("Performed %d remote lookups, with " +
-							"%d successes (%lf%%) and %d failures (%lf%%)\n",
+							"%d successes (%f%%) and %d failures (%f%%)\n",
 				totalLookupCount,
 				lookupSuccessCount, lookupSuccessPercentage,
 				lookupFailureCount, lookupFailurePercentage);
