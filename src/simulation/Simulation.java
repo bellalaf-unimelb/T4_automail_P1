@@ -71,7 +71,7 @@ public class Simulation {
          * This code section is for running a simulation
          */
         /* Instantiate MailPool and Automail */
-	MailPool mailPool = new MailPool(NUM_ROBOTS);
+        MailPool mailPool = new MailPool(NUM_ROBOTS);
         Automail automail = new Automail(mailPool, new ReportDelivery(), NUM_ROBOTS);
         MailGenerator mailGenerator = new MailGenerator(MAIL_TO_CREATE, MAIL_MAX_WEIGHT, mailPool, seedMap);
 

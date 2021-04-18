@@ -61,6 +61,7 @@ public class Robot {
      */
     public void operate() throws ExcessiveDeliveryException, Exception {
 	switch(current_state) {
+	
 		/** This state is triggered when the robot is returning to the mail room after a delivery */
 		case RETURNING:
 			/** If its current position is at the mail room, then the robot should change state */
@@ -79,6 +80,7 @@ public class Robot {
                     moveTowards(Building.MAILROOM_LOCATION);
 			break;
                 }
+                
 		case WAITING:
                 /** If the StorageTube is ready and the Robot is waiting in the mailroom then start the delivery */
                 if(!isEmpty() && receivedDispatch){
@@ -88,6 +90,7 @@ public class Robot {
 			changeState(RobotState.DELIVERING);
                 }
                 break;
+                
 		case DELIVERING:
 			if(current_floor == destination_floor){ // If already here drop off either way
                     /** Delivery complete! */
@@ -123,7 +126,7 @@ public class Robot {
      * Records movement in both deliveryItem and tube
      */
     private void recordMovement(int movementCount) {
-	assert(deliveryItem != null);
+	assert(this.deliveryItem != null);
 
 	deliveryItem.recordMovement(movementCount);
 	if(tube != null) {
@@ -149,7 +152,11 @@ public class Robot {
         } else {
             current_floor--;
         }
-        recordMovement(1);
+        //only record movement if the robot has an item
+        if(this.current_state == RobotState.DELIVERING) { 
+        	System.out.println("Robot hi");
+        	recordMovement(1);
+        }
     }
 
     private String getIdTube() {

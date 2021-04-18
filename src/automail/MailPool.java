@@ -132,7 +132,7 @@ public class MailPool {
 		ListIterator<Item> j = regPool.listIterator();
 
 		// Load the high priority items first
-		if (priorityPool.size() > 0) {
+		if ((priorityPool != null) && (priorityPool.size() > 0)) {
 			Iterator<Item> k = priorityPool.iterator();
 			addItemsFromPool(robot, k);
 		}
