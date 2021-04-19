@@ -24,9 +24,6 @@ public class Accountant {
 		billableActivitySum += Calculator.calculateActivityUnits(item);
 		activityCostSum += Calculator.calculateActivityCost(item);
 		serviceCostSum += Calculator.calculateServiceFee(item);
-
-		System.out.printf("T: %3d > Delivered(%4d) [%s]%n",
-				Clock.Time(), deliveredItemCount, item.toString());
 	}
 
 	public static void recordLookup(boolean wasSuccessful) {
@@ -45,7 +42,7 @@ public class Accountant {
 
 		System.out.format("Delivered %d items\n", deliveredItemCount);
 
-		System.out.format("Billed %.2f dollars for activity\n", billableActivitySum);
+		System.out.format("Performed %.2f activity units\n", billableActivitySum);
 		System.out.format("Spent %.2f dollars on activity\n", activityCostSum);
 		System.out.format("Spent %.2f dollars on service\n", serviceCostSum);
 
@@ -59,6 +56,19 @@ public class Accountant {
 				totalLookupCount,
 				lookupSuccessCount, lookupSuccessPercentage,
 				lookupFailureCount, lookupFailurePercentage);
+	}
+
+	public static String reportItem(MailItem deliveryItem) throws Exception {
+		if(isChargeDisplayEnabled) {
+			return String.format(" | Charge: %.2f | Cost: %.2f | Fee: %.2f | Activity: %.2f",
+					Calculator.calculateCharge(deliveryItem),
+					Calculator.calculateActivityCost(deliveryItem),
+					Calculator.calculateServiceFee(deliveryItem),
+					Calculator.calculateActivityUnits(deliveryItem));
+		}
+		else {
+			return "";
+		}
 	}
 }
 

@@ -164,7 +164,13 @@ public class Simulation {
 		public void deliver(MailItem deliveryItem){
 			if(!MAIL_DELIVERED.contains(deliveryItem)){
 				MAIL_DELIVERED.add(deliveryItem);
-				// System.out.printf("T: %3d > Delivered(%4d) [%s]%n", Clock.Time(), MAIL_DELIVERED.size(), deliveryItem.toString());
+				System.out.printf("T: %3d > Delivered(%4d) [", Clock.Time(), MAIL_DELIVERED.size());
+				System.out.printf("%s", deliveryItem.toString());
+				try {
+					System.out.printf("%s]%n", Accountant.reportItem(deliveryItem));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				// Calculate delivery score
 				total_delay += calculateDeliveryDelay(deliveryItem);
 			}
