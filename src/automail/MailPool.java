@@ -38,36 +38,35 @@ public class MailPool {
 	}
 
 	private LinkedList<Item> regPool;
-	private Queue<Item> priorityPool;
+	//was queue
+	private LinkedList<Item> priorityPool;
 	private LinkedList<Robot> robots;
-	private boolean sortByPriority;
 
 	public MailPool(int nrobots){
 		// Start empty
+		//if Charge is 0, only priority pool will be used
+		priorityPool = new LinkedList<Item>();
 		regPool = new LinkedList<Item>();
 		robots = new LinkedList<Robot>();
-		if (Calculator.getChargeThreshold() > 0) {
-			sortByPriority = true;
-			priorityPool = new LinkedList<Item>();
-		}
 	}
 
+	// Adds item to the priority pool
+	// If it's high priority, it just gets added to the HP queue - no distinction between classes
+	// called by addItemToPools
+	// if not using ChargeThreshold, all items are considered priority
+	public void addToPriorityPool(MailItem mailItem) {
+		Item item = new Item(mailItem);
+		priorityPool.add(item);
+		priorityPool.sort(new ItemComparator());
+	}
+	
 	// Adds item to the regular pool
-	//called by addItemToPools
+	// called by addItemToPools
 	public void addToRegPool(MailItem mailItem) {
 		Item item = new Item(mailItem);
 		regPool.add(item);
 		regPool.sort(new ItemComparator());
 	}
-
-	// Adds item to the priority pool
-	// If it's high priority, it just gets added to the HP queue - no distinction between classes
-	//called by addItemToPools
-	public void addToPriorityPool(MailItem mailItem) {
-		Item item = new Item(mailItem);
-		priorityPool.add(item);
-	}
-
 
 	/**
 	 * Adds an item to the mail pool
@@ -75,16 +74,11 @@ public class MailPool {
 	 */
 	public void addItemToPools(MailItem mailItem) throws Exception {
 		// Accounts for charge threshold
-		if (sortByPriority) {
-			// Estimate the charge for the new item
-			// Assuming that the robot travels from ground -> destination
-			double estimatedCost = Calculator.calculateCharge(mailItem);
-			if (estimatedCost > Calculator.getChargeThreshold()) {
-				addToPriorityPool(mailItem);
-			}
-			else {
-				addToRegPool(mailItem);
-			}
+		// Estimate the charge for the new item
+		// Assuming that the robot travels from ground -> destination
+		double estimatedCost = Calculator.calculateCharge(mailItem);
+		if (estimatedCost > Calculator.getChargeThreshold()) {
+			addToPriorityPool(mailItem);
 		}
 		else {
 			addToRegPool(mailItem);
@@ -105,11 +99,14 @@ public class MailPool {
 	 * @param robot
 	 */
 
-	private void addItemsFromPool(Robot robot, Iterator<Item> j) throws ItemTooHeavyException {
+	private void addItemsFromPool(Robot robot, ListIterator<Item> j) throws ItemTooHeavyException {
+		
 		if (j.hasNext()) {
 			try {
-				robot.addToHand(j.next().mailItem); // hand first as we want higher priority delivered first
-				j.remove();
+				if(robot.isEmpty()) {
+					robot.addToHand(j.next().mailItem); // hand first as we want higher priority delivered first
+					j.remove();
+				}
 				// if there are still items deliverable from the given pool
 				if (j.hasNext()) {
 					robot.addToTube(j.next().mailItem);
@@ -130,30 +127,30 @@ public class MailPool {
 		assert(robot.isEmpty());
 		// System.out.printf("P: %3d%n", pool.size());
 		// loads the current items
-		ListIterator<Item> j = regPool.listIterator();
+		
+		ListIterator<Item> k = priorityPool.listIterator();
 
 		// Load the high priority items first
-		if ((priorityPool != null) && (priorityPool.size() > 0)) {
-			Iterator<Item> k = priorityPool.iterator();
+		if (priorityPool.size() > 0) {
+
 			addItemsFromPool(robot, k);
 		}
 
 		// Check the other pool
-		if (robot.isEmpty() || robot.getTube() == null) {
+		if (robot.isEmpty() || (robot.getTube() == null)) {
 			// then we can start adding from the other pool.
+
+			ListIterator<Item> j = regPool.listIterator();
 			addItemsFromPool(robot, j);
 		}
 
 		// send the robot off if it has any items to deliver
 		if (!robot.isEmpty()) {
+
 			robot.dispatch();
-
+			i.remove();
 		}
-
-		i.remove();
 	}
-
-
 
 	/**
 	 * @param robot refers to a robot which has arrived back ready for more mailItems to deliver

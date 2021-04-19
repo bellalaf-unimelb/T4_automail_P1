@@ -40,7 +40,7 @@ public class MailGenerator {
         // Vary arriving mail by +/-20%
         MAIL_TO_CREATE = mailToCreate*4/5 + random.nextInt(mailToCreate*2/5);
         MAIL_MAX_WEIGHT = mailMaxWeight;
-        // System.out.println("Num Mail Items: "+MAIL_TO_CREATE);
+        //System.out.println("Num Mail Items: "+MAIL_TO_CREATE);
         mailCreated = 0;
         complete = false;
         allMail = new HashMap<Integer,ArrayList<MailItem>>();
