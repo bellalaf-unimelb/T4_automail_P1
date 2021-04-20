@@ -136,8 +136,10 @@ public class Simulation {
 		NUM_ROBOTS = Integer.parseInt(automailProperties.getProperty("Robots"));
 		System.out.print("#Robots: "); System.out.println(NUM_ROBOTS);
 		assert(NUM_ROBOTS > 0);
-		Calculator.setChargeThreshold(Double.parseDouble(automailProperties.getProperty("ChargeThreshold")));
-		System.out.println("#Charge Threshold: " + Calculator.getChargeThreshold());
+		// Charge_Threshold
+		double chargeThreshold = Double.parseDouble(automailProperties.getProperty("ChargeThreshold"));
+		Calculator.setChargeThreshold(chargeThreshold);
+		System.out.println("#Charge Threshold: " + chargeThreshold);
 		// Charge_Display
 		CHARGE_DISPLAY = Boolean.parseBoolean(automailProperties.getProperty("ChargeDisplay"));
 		System.out.println("#Charge Display: " + CHARGE_DISPLAY);
@@ -145,14 +147,16 @@ public class Simulation {
 			Accountant.enableChargeDisplay();
 		}
 		// Markup_Percentage
-		Calculator.setMarkupPercentage(Double.parseDouble(automailProperties.getProperty("MarkupPercentage")));
+		double markupPercentage = Double.parseDouble(automailProperties.getProperty("MarkupPercentage"));
+		Calculator.setMarkupPercentage(markupPercentage);
 		if(CHARGE_DISPLAY) {
-			System.out.println("#Markup Percentage: " + Calculator.getMarkupPercentage());
+			System.out.println("#Markup Percentage: " + markupPercentage);
 		}
 		// Activity_Unit_Price
-		Calculator.setActivityUnitPrice(Double.parseDouble(automailProperties.getProperty("ActivityUnitPrice")));
+		double activityUnitPrice = Double.parseDouble(automailProperties.getProperty("ActivityUnitPrice"));
+		Calculator.setActivityUnitPrice(activityUnitPrice);
 		if(CHARGE_DISPLAY) {
-			System.out.println("#Activity Unit Price: " + Calculator.getActivityUnitPrice());
+			System.out.println("#Activity Unit Price: " + activityUnitPrice);
 		}
 
 		return automailProperties;
@@ -167,7 +171,7 @@ public class Simulation {
 				System.out.printf("T: %3d > Delivered(%4d) [", Clock.Time(), MAIL_DELIVERED.size());
 				System.out.printf("%s", deliveryItem.toString());
 				try {
-					System.out.printf("%s]%n", Accountant.reportItem(deliveryItem));
+					System.out.printf("%s]%n", Accountant.generateItemReport(deliveryItem));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

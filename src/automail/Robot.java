@@ -66,8 +66,8 @@ public class Robot {
 		case RETURNING:
 			/** If its current position is at the mail room, then the robot should change state */
 			if(current_floor == Building.MAILROOM_LOCATION){
-				if (tube != null) { // TODO: figure out if and how this can ever be true
-					//so far testing has indicated this never happens
+				if (tube != null) { // this case should never happen
+					new Exception("returning item to mailpool!").printStackTrace();
 					mailPool.addItemToPools(tube);
 					System.out.printf("T: %3d > old addToPool [%s]%n", Clock.Time(), tube.toString());
 					tube = null;
@@ -80,7 +80,7 @@ public class Robot {
 				moveTowards(Building.MAILROOM_LOCATION);
 				break;
 			}
-		
+
 		case WAITING:
 			/** If the StorageTube is ready and the Robot is waiting in the mailroom then start the delivery */
 			if(!isEmpty() && receivedDispatch){
