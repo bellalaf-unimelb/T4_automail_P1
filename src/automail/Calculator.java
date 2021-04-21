@@ -1,7 +1,5 @@
 package automail;
 
-import com.unimelb.swen30006.wifimodem.WifiModem;
-
 import simulation.Building;
 
 

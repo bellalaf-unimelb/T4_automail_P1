@@ -3,7 +3,6 @@ package automail;
 import com.unimelb.swen30006.wifimodem.WifiModem;
 
 import simulation.Building;
-import simulation.Clock;
 
 public class Accountant {
 	private static boolean isChargeDisplayEnabled = false;
