@@ -24,13 +24,10 @@ public class Accountant {
 
 	public static void recordDelivery(MailItem deliveryItem) throws Exception {
 		++deliveredItemCount;
-		
-		// this needs to be called first because it updates deliveryItem.lookupCount
-		double serviceFee = lookupServiceFee(deliveryItem);
 
-		billableActivitySum += Calculator.calculateBillableActivity(deliveryItem);
+		billableActivitySum += Calculator.calculateActivity(deliveryItem);
 		activityCostSum += Calculator.calculateActivityCost(deliveryItem);
-		serviceCostSum += serviceFee;
+		serviceCostSum += serviceFeeRecords[deliveryItem.getDestFloor() - 1];
 	}
 
 	public static void reportStatistics() {
@@ -60,8 +57,8 @@ public class Accountant {
 		double charge = Calculator.calculateCharge(deliveryItem);
 		// the call to calculateCharge() just updated our service fee records
 		double serviceFee = serviceFeeRecords[deliveryItem.getDestFloor() - 1];
-		double cost = serviceFee + Calculator.calculateActivityBill(deliveryItem);
-		double activity = Calculator.calculateBillableActivity(deliveryItem);
+		double cost = serviceFee + Calculator.calculateActivityCost(deliveryItem);
+		double activity = Calculator.calculateActivity(deliveryItem);
 		
 		return String.format(" | Charge: %.2f | Cost: %.2f | Fee: %.2f | Activity: %.2f",
 				charge, cost, serviceFee, activity);
@@ -76,8 +73,8 @@ public class Accountant {
 		WifiModem modem = WifiModem.getInstance(deliveryItem.getDestFloor());
 		double serviceFee = modem.forwardCallToAPI_LookupPrice(floor);
 
-		deliveryItem.recordLookup(); // to incur the lookup cost
-		recordLookup(serviceFee >= 0); // to record success vs failure
+		boolean wasLookupSuccessful = (serviceFee >= 0);
+		recordLookup(wasLookupSuccessful);
 
 		// failure: use the most recent record
 		if(serviceFee < 0) return serviceFeeRecords[floor-1]; // -1 to compensate for zero-indexing

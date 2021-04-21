@@ -2,7 +2,6 @@ package automail;
 
 import simulation.Building;
 
-
 public class Calculator {
 	private static final double ACTIVITY_UNITS_PER_MOVEMENT = 5;
 	private static final double ACTIVITY_UNITS_PER_LOOKUP = 0.1;
@@ -20,28 +19,24 @@ public class Calculator {
 	 */
 	public static boolean isHighPriority(MailItem deliveryItem) throws Exception {
 		double chargeEstimate = calculateCharge(deliveryItem);
-
 		return chargeEstimate > chargeThreshold;
 	}
 	/**
-	 * when it comes to charging the customer, always calculate the bill
-	 * as if they are the only customer.
-	 * @param deliveryItem
-	 * @return
+	 * Always calculate the charge as if this is the only deliveryItem
 	 */
 	public static double calculateCharge(MailItem deliveryItem) throws Exception {
 		double serviceFee = Accountant.lookupServiceFee(deliveryItem);
 
-		double activityBill = calculateActivityBill(deliveryItem);
+		double activityCost = calculateActivityCost(deliveryItem);
 
-		double cost = activityBill + serviceFee;
+		double cost = activityCost + serviceFee;
 
 		return cost * (1 + markupPercentage);
 	}
-	public static double calculateActivityBill(MailItem deliveryItem) {
-		return activityUnitPrice * calculateBillableActivity(deliveryItem);
+	public static double calculateActivityCost(MailItem deliveryItem) {
+		return activityUnitPrice * calculateActivity(deliveryItem);
 	}
-	public static double calculateBillableActivity(MailItem deliveryItem) {
+	public static double calculateActivity(MailItem deliveryItem) {
 		// go from mailroom to destination and then come back
 		double billableMovementCount = 2 * Math.abs(
 				Building.MAILROOM_LOCATION - deliveryItem.getDestFloor());
@@ -57,14 +52,6 @@ public class Calculator {
 	}
 	public static double calculateLookupCost() {
 		return ACTIVITY_UNITS_PER_LOOKUP * activityUnitPrice;
-	}
-
-	public static double calculateActivityCost(MailItem deliveryItem) {
-		return activityUnitPrice * calculateActivity(deliveryItem);
-	}
-	public static double calculateActivity(MailItem deliveryItem) {
-		return deliveryItem.getMovementCount() * ACTIVITY_UNITS_PER_MOVEMENT +
-				deliveryItem.getLookupCount() * ACTIVITY_UNITS_PER_LOOKUP;
 	}
 
 	public static void setChargeThreshold(double chargeThreshold) {

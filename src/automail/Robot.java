@@ -134,21 +134,6 @@ public class Robot {
 		} else {
 			current_floor--;
 		}
-		
-		recordMovement();
-	}
-	private void recordMovement() {
-		switch(current_state) {
-		case RETURNING:
-			// movement cost incurred directly by system
-			Accountant.recordMovement();
-			break;
-		case DELIVERING:
-			// movement cost incurred through deliveryItem
-			deliveryItem.recordMovement();
-		default:
-			break;
-		}
 	}
 
 	private String getIdTube() {

@@ -19,11 +19,6 @@ public class MailItem {
 	/** The weight in grams of the mail item */
 	protected final int weight;
 
-	/** How many times the mail item has been moved by a robot */
-	private int movementCount;
-	/** How many (billable) service fee lookups have been performed for the mail item */
-	private int lookupCount;
-
 	/**
 	 * Constructor for a MailItem
 	 * @param dest_floor the destination floor intended for this mail item
@@ -35,9 +30,6 @@ public class MailItem {
 		this.id = String.valueOf(hashCode());
 		this.arrival_time = arrival_time;
 		this.weight = weight;
-
-		movementCount = 0;
-		lookupCount = 0;
 	}
 
 	@Override
@@ -86,19 +78,5 @@ public class MailItem {
 		Integer hash = hashMap.get(hash0);
 		if (hash == null) { hash = count++; hashMap.put(hash0, hash); }
 		return hash;
-	}
-
-	public int getMovementCount() {
-		return movementCount;
-	}
-	public void recordMovement() {
-		++movementCount;
-	}
-	
-	public int getLookupCount() {
-		return lookupCount;
-	}
-	public void recordLookup() {
-		++lookupCount;
 	}
 }
