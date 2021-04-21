@@ -78,7 +78,7 @@ public class Simulation {
 		/** Generate all the mails */
 		mailGenerator.generateAllMail();
 		
-		while(MAIL_DELIVERED.size() != mailGenerator.MAIL_TO_CREATE) {
+		while(MAIL_DELIVERED.size() < mailGenerator.MAIL_TO_CREATE | !automail.isIdle()) {
 			//System.out.printf("Delivered: %4d; Created: %4d%n", MAIL_DELIVERED.size(), mailGenerator.MAIL_TO_CREATE);
 			mailGenerator.addToMailPool();
 			try {
