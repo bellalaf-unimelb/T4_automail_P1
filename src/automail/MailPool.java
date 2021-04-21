@@ -93,7 +93,7 @@ public class MailPool {
 	 * load up any waiting robots with mailItems, if any.
 	 */
 	public void loadItemsToRobot() throws ItemTooHeavyException {
-		//List available robots
+		// List available robots
 		ListIterator<Robot> i = robots.listIterator();
 		while (i.hasNext()) loadItem(i);
 	}
@@ -105,32 +105,21 @@ public class MailPool {
 
 	private void addItemsFromPool(Robot robot, boolean priority) throws ItemTooHeavyException {
 
-		LinkedList<Item> pool = null;
+		LinkedList<Item> pool = priority? priorityPool: regPool;
 
-		if (priority) {
-			pool = priorityPool;
-		}
-		else {
-			pool = regPool;
-		}
-
+		/* if regPool isn't being used (as in chargeThreshold == 0),
+		 * it will come up as empty here and the function will return
+		 */
 		if (!pool.isEmpty()) {
-		//if regPool isn't being used, it will come up as empty here and the function will return
-			try {
-				if(robot.isEmpty()) {
-					
-					robot.addToHand(pool.getLast().mailItem); // hand first as we want higher priority delivered first
-					pool.removeLast();
-				}
-				// if there are still items deliverable from the given pool
-				if (!pool.isEmpty()) {
-					
-					robot.addToTube(pool.getLast().mailItem);
-					pool.removeLast();
-				}
+			
+			if(robot.isEmpty()) {
+				// hand first as we want higher priority delivered first
+				robot.addToHand(pool.getFirst().mailItem);
+				pool.removeFirst();
 			}
-			catch (Exception e) {
-				throw e;
+			if(!pool.isEmpty()) {
+				robot.addToTube(pool.getFirst().mailItem);
+				pool.removeFirst();
 			}
 		}
 	}
