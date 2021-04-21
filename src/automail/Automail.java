@@ -1,6 +1,5 @@
 package automail;
 
-import automail.Robot.RobotState;
 import simulation.IMailDelivery;
 
 public class Automail {
@@ -17,16 +16,4 @@ public class Automail {
     	robots = new Robot[numRobots];
     	for (int i = 0; i < numRobots; i++) robots[i] = new Robot(delivery, mailPool, i);
     }
-    
-    /**
-     * @return whether all robots are in the waiting state.
-     */
-	public boolean isIdle() {
-		for(int i=0; i<robots.length; i++) {
-			if(robots[i].current_state != RobotState.WAITING) {
-				return false;
-			}
-		}
-		return true;
-	}
 }
