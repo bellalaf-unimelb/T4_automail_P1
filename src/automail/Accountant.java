@@ -25,17 +25,17 @@ public class Accountant {
 
 	public static void recordDelivery(MailItem deliveryItem) throws Exception {
 		++deliveredItemCount;
+		
+		// this needs to be called first because it updates deliveryItem.lookupCount
+		double serviceFee = lookupServiceFee(deliveryItem);
 
-		serviceCostSum += lookupServiceFee(deliveryItem, true);
-
-		billableActivitySum += Calculator.calculateActivityUnits(deliveryItem);
+		billableActivitySum += Calculator.calculateBillableActivity(deliveryItem);
 		activityCostSum += Calculator.calculateActivityCost(deliveryItem);
+		serviceCostSum += serviceFee;
 	}
 
 	public static void reportStatistics() {
-		if(!isChargeDisplayEnabled) {
-			return;
-		}
+		if(!isChargeDisplayEnabled) return;
 
 		System.out.format("Delivered %d items\n", deliveredItemCount);
 
@@ -56,21 +56,19 @@ public class Accountant {
 	}
 
 	public static String generateItemReport(MailItem deliveryItem) throws Exception {
-		if(isChargeDisplayEnabled) {
-			double serviceFee = lookupServiceFee(deliveryItem, false);
-
-			return String.format(" | Charge: %.2f | Cost: %.2f | Fee: %.2f | Activity: %.2f",
-					Calculator.calculateCharge(deliveryItem),
-					Calculator.calculateActivityCost(deliveryItem) + serviceFee,
-					serviceFee,
-					Calculator.calculateActivityUnits(deliveryItem));
-		}
-		else {
-			return "";
-		}
+		if(!isChargeDisplayEnabled) return "";
+		
+		double charge = Calculator.calculateCharge(deliveryItem);
+		// the call to calculateCharge() just updated our service fee records
+		double serviceFee = serviceFeeRecords[deliveryItem.getDestFloor() - 1];
+		double cost = serviceFee + Calculator.calculateActivityBill(deliveryItem);
+		double activity = Calculator.calculateBillableActivity(deliveryItem);
+		
+		return String.format(" | Charge: %.2f | Cost: %.2f | Fee: %.2f | Activity: %.2f",
+				charge, cost, serviceFee, activity);
 	}
 
-	public static double lookupServiceFee(MailItem deliveryItem, boolean isLookupBillable) throws Exception {
+	public static double lookupServiceFee(MailItem deliveryItem) throws Exception {
 		if(serviceFeeRecords == null) {
 			initiateServiceFeeRecords();
 		}
@@ -79,10 +77,8 @@ public class Accountant {
 		WifiModem modem = WifiModem.getInstance(deliveryItem.getDestFloor());
 		double serviceFee = modem.forwardCallToAPI_LookupPrice(floor);
 
-		recordServiceFeeLookup(
-				deliveryItem,
-				serviceFee >= 0,
-				isLookupBillable); // negative result means failure
+		deliveryItem.recordLookup(); // to incur the lookup cost
+		recordLookup(serviceFee >= 0); // to record success vs failure
 
 		// failure: use the most recent record
 		if(serviceFee < 0) return serviceFeeRecords[floor-1]; // -1 to compensate for zero-indexing
@@ -91,32 +87,24 @@ public class Accountant {
 		serviceFeeRecords[floor-1] = serviceFee; // -1 to compensate for zero-indexing
 		return serviceFee;
 	}
-	public static void recordServiceFeeLookup(
-			MailItem deliveryItem,
-			boolean wasSuccessful,
-			boolean isBillable) {
-		if(wasSuccessful) {
-			++lookupSuccessCount;
-		}
-		else {
-			++lookupFailureCount;
-		}
-
-		/* Billable lookup costs are added to activityCostSum
-		 * in recordDelivery(), not here.
-		 */
-		if(isBillable) {
-			deliveryItem.recordLookup();
-		}
-		else {
-			activityCostSum += Calculator.calculateLookupCost();
-		}
-	}
+	
 	private static void initiateServiceFeeRecords() {
 		serviceFeeRecords = new double[Building.FLOORS];
 
 		for(int i=0; i<Building.FLOORS; i++) {
 			serviceFeeRecords[i] = 0; // assume 0 to avoid overcharging
+		}
+	}
+
+	public static void recordMovement() {
+		activityCostSum += Calculator.calculateMovementCost();
+	}
+	public static void recordLookup(boolean success) {
+		if(success) {
+			++lookupSuccessCount;
+		}
+		else {
+			++lookupFailureCount;
 		}
 	}
 }

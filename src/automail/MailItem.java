@@ -37,19 +37,12 @@ public class MailItem {
 		this.weight = weight;
 
 		movementCount = 0;
+		lookupCount = 0;
 	}
 
 	@Override
 	public String toString(){
 		return String.format("Mail Item:: ID: %6s | Arrival: %4d | Destination: %2d | Weight: %4d", id, arrival_time, destination_floor, weight);
-	}
-
-	public void recordMovement(int movementCount) {
-		this.movementCount += movementCount;
-	}
-
-	public void recordLookup() {
-		++lookupCount;
 	}
 
 	/**
@@ -98,7 +91,14 @@ public class MailItem {
 	public int getMovementCount() {
 		return movementCount;
 	}
+	public void recordMovement() {
+		++movementCount;
+	}
+	
 	public int getLookupCount() {
 		return lookupCount;
+	}
+	public void recordLookup() {
+		++lookupCount;
 	}
 }

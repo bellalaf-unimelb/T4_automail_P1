@@ -93,11 +93,9 @@ public class Robot {
 
 		case DELIVERING:
 			if(current_floor == destination_floor){ // If already here drop off either way
-				/** Delivery complete! */
-				deliveryItem.recordMovement(current_floor - Building.MAILROOM_LOCATION); // for the return trip
-				Accountant.recordDelivery(deliveryItem);
-				/** report to the simulator */
+				/** Delivery complete, report this to the simulator! */
 				delivery.deliver(deliveryItem);
+				Accountant.recordDelivery(deliveryItem);
 				deliveryItem = null;
 				deliveryCounter++;
 				if(deliveryCounter > 2){  // Implies a simulation bug
@@ -123,18 +121,6 @@ public class Robot {
 	}
 
 	/**
-	 * Records movement in both deliveryItem and tube
-	 */
-	private void recordMovement(int movementCount) {
-		assert(this.deliveryItem != null);
-
-		deliveryItem.recordMovement(movementCount);
-		if(tube != null) {
-			tube.recordMovement(movementCount);
-		}
-	}
-
-	/**
 	 * Sets the route for the robot
 	 */
 	private void setDestination() {
@@ -142,19 +128,26 @@ public class Robot {
 		destination_floor = deliveryItem.getDestFloor();
 	}
 
-	/**
-	 * Generic function that moves the robot towards the destination
-	 * @param destination the floor towards which the robot is moving
-	 */
 	private void moveTowards(int destination) {
 		if(current_floor < destination){
 			current_floor++;
 		} else {
 			current_floor--;
 		}
-		//only record movement if the robot has an item
-		if(this.current_state == RobotState.DELIVERING) { 
-			recordMovement(1);
+		
+		recordMovement();
+	}
+	private void recordMovement() {
+		switch(current_state) {
+		case RETURNING:
+			// movement cost incurred directly by system
+			Accountant.recordMovement();
+			break;
+		case DELIVERING:
+			// movement cost incurred through deliveryItem
+			deliveryItem.recordMovement();
+		default:
+			break;
 		}
 	}
 

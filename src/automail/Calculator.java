@@ -4,6 +4,7 @@ import com.unimelb.swen30006.wifimodem.WifiModem;
 
 import simulation.Building;
 
+
 public class Calculator {
 	private static final double ACTIVITY_UNITS_PER_MOVEMENT = 5;
 	private static final double ACTIVITY_UNITS_PER_LOOKUP = 0.1;
@@ -20,44 +21,52 @@ public class Calculator {
 	 * @throws Exception from lookupServiceFee()
 	 */
 	public static boolean isHighPriority(MailItem deliveryItem) throws Exception {
-		int movementCountEstimate = Math.abs(Building.MAILROOM_LOCATION - deliveryItem.getDestFloor());
-		int billableLookupCount = 1;
-
-		double activityEstimate =
-				(ACTIVITY_UNITS_PER_MOVEMENT * movementCountEstimate) +
-				(ACTIVITY_UNITS_PER_LOOKUP * billableLookupCount);
-
-		double activityCostEstimate = activityUnitPrice * activityEstimate;
-
-		double serviceFeeEstimate = Accountant.lookupServiceFee(deliveryItem, false);
-
-		double costEstimate = activityCostEstimate + serviceFeeEstimate;
-
-		double chargeEstimate = costEstimate * (1 + markupPercentage);
+		double chargeEstimate = calculateCharge(deliveryItem);
 
 		return chargeEstimate > chargeThreshold;
 	}
-
+	/**
+	 * when it comes to charging the customer, always calculate the bill
+	 * as if they are the only customer.
+	 * @param deliveryItem
+	 * @return
+	 */
 	public static double calculateCharge(MailItem deliveryItem) throws Exception {
-		double serviceFee = Accountant.lookupServiceFee(deliveryItem, false);
+		double serviceFee = Accountant.lookupServiceFee(deliveryItem);
 
-		double activityCost = calculateActivityCost(deliveryItem);
+		double activityBill = calculateActivityBill(deliveryItem);
 
-		double cost = activityCost + serviceFee;
+		double cost = activityBill + serviceFee;
 
 		return cost * (1 + markupPercentage);
 	}
-
+	public static double calculateActivityBill(MailItem deliveryItem) {
+		return activityUnitPrice * calculateBillableActivity(deliveryItem);
+	}
+	public static double calculateBillableActivity(MailItem deliveryItem) {
+		// go from mailroom to destination and then come back
+		double billableMovementCount = 2 * Math.abs(
+				Building.MAILROOM_LOCATION - deliveryItem.getDestFloor());
+		// spec says charge for 1 lookup
+		double billableLookupCount = 1;
+		
+		return billableMovementCount * ACTIVITY_UNITS_PER_MOVEMENT +
+				billableLookupCount * ACTIVITY_UNITS_PER_LOOKUP;
+	}
+	
+	public static double calculateMovementCost() {
+		return ACTIVITY_UNITS_PER_MOVEMENT * activityUnitPrice;
+	}
 	public static double calculateLookupCost() {
 		return ACTIVITY_UNITS_PER_LOOKUP * activityUnitPrice;
 	}
 
-	public static double calculateActivityCost(MailItem item) {
-		return calculateActivityUnits(item) * activityUnitPrice;
+	public static double calculateActivityCost(MailItem deliveryItem) {
+		return activityUnitPrice * calculateActivity(deliveryItem);
 	}
-	public static double calculateActivityUnits(MailItem deliveryItem) {
-		return (deliveryItem.getMovementCount() * ACTIVITY_UNITS_PER_MOVEMENT) +
-				(deliveryItem.getLookupCount() * ACTIVITY_UNITS_PER_LOOKUP);
+	public static double calculateActivity(MailItem deliveryItem) {
+		return deliveryItem.getMovementCount() * ACTIVITY_UNITS_PER_MOVEMENT +
+				deliveryItem.getLookupCount() * ACTIVITY_UNITS_PER_LOOKUP;
 	}
 
 	public static void setChargeThreshold(double chargeThreshold) {
