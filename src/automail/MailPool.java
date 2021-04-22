@@ -54,7 +54,7 @@ public class MailPool {
 	// If it's high priority, it just gets added to the HP queue - no distinction between classes
 	// called by addItemToPools
 	// if not using ChargeThreshold, all items are considered priority
-	public void addToPriorityPool(MailItem mailItem) {
+	private void addToPriorityPool(MailItem mailItem) {
 		
 		Item item = new Item(mailItem);
 		priorityPool.add(item);
@@ -65,7 +65,7 @@ public class MailPool {
 
 	// Adds item to the regular pool
 	// called by addItemToPools
-	public void addToRegPool(MailItem mailItem) {
+	private void addToRegPool(MailItem mailItem) {
 		
 		Item item = new Item(mailItem);
 		regPool.add(item);
